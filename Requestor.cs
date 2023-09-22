@@ -31,7 +31,7 @@ namespace AoCDiscord
         {
             DateTime writeDate = File.GetLastWriteTime(pathToCache);
 
-            if (writeDate > writeDate.AddHours(1))
+            if (DateTime.Now > writeDate.AddHours(1))
             {
                 try
                 {
@@ -39,8 +39,9 @@ namespace AoCDiscord
 
                     string responseBody = await _client.GetStringAsync(_baseAddress);
 
+                    Console.WriteLine("Downloaded File to Cache");
                     File.WriteAllText(pathToCache, responseBody);
-                    return ("Downloaded File to Cache");
+                    return (responseBody);
                 }
                 catch (HttpRequestException e)
                 {
@@ -48,7 +49,9 @@ namespace AoCDiscord
                 }
 
             }
-            return "Cache already up to date!";
+
+            Console.WriteLine("Cache already up to date!");
+            return File.ReadAllText(pathToCache);
         }
 
        

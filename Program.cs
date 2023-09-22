@@ -1,6 +1,8 @@
-﻿using System.Text.Json;
+﻿
 using System.Net;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AoCDiscord
 {
@@ -16,8 +18,23 @@ namespace AoCDiscord
 
             Requestor requestor = new Requestor(authToken,baseAddress,leaderboardOwnerID);
             
-            Console.WriteLine(requestor.makeRequest().Result);
+            var result = await requestor.makeRequest();
 
+            var people = new List<Person>();
+
+            var obj = JObject.Parse(result);
+            foreach (var person in obj["members"])
+            {
+                people.Add(new Person {
+                    Id = (int)person.ElementAt(0)["id"],
+                    Name = (string)person.ElementAt(0)["name"],
+                    LocalScore = (int)person.ElementAt(0)["local_score"],
+                    Stars = (int)person.ElementAt(0)["stars"],
+                    LastStarTime = (int)person.ElementAt(0)["last_star_ts"]
+                });
+            }
+
+            
         }
 
  
