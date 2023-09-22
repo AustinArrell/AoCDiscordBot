@@ -1,38 +1,24 @@
-﻿using System.Net;
+﻿using System.Text.Json;
+using System.Net;
 
 namespace AoCDiscord
 {
-    internal class Program
+    public class Program
     {
-
+        
         
         static async Task Main()
         {
             string authToken = "TOKEN_HERE";
             string leaderboardOwnerID = "1080248";
             var baseAddress = new Uri(@$"https://adventofcode.com/2015/leaderboard/private/view/{leaderboardOwnerID}.json");
-            var cookieContainer = new CookieContainer();
 
-            using var handler = new HttpClientHandler()
-            {
-                CookieContainer = cookieContainer,
-            };
+            Requestor requestor = new Requestor(authToken,baseAddress,leaderboardOwnerID);
 
-            HttpClient client = new HttpClient(handler);
+            Console.WriteLine(requestor.makeRequest().Result);
             
-            try
-            {
-                cookieContainer.Add(baseAddress, new Cookie("session", authToken));
-                
-                string responseBody  = await client.GetStringAsync(baseAddress);
-
-                Console.WriteLine(responseBody);
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-            }
         }
+
+ 
     }
 }
