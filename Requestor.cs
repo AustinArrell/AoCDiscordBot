@@ -14,7 +14,8 @@ namespace AoCDiscord
         private string _leaderboardOwnerID { get; set; }
         private CookieContainer _cookieContainer = new CookieContainer();
         public HttpClientHandler _handler { get; set; } = new HttpClientHandler();
-        private HttpClient _client { get; set; } 
+        private HttpClient _client { get; set; }
+        private string pathToCache = "G:\\dev\\AoCDiscordBot\\cache.json";
 
         public Requestor(string authToken, Uri baseAddress, string leaderboardOwnerID) 
         {
@@ -28,18 +29,26 @@ namespace AoCDiscord
 
         public async Task<string> makeRequest() 
         {
-            try
-            {
-                _cookieContainer.Add(_baseAddress, new Cookie("session", _authToken));
+            DateTime writeDate = File.GetLastWriteTime(pathToCache);
 
-                string responseBody = await _client.GetStringAsync(_baseAddress);
-
-                return(responseBody);
-            }
-            catch (HttpRequestException e)
+            if (writeDate > writeDate.AddHours(1))
             {
-                return("\nException Caught!" + $"\nMessage :{e.Message} ");
+                try
+                {
+                    _cookieContainer.Add(_baseAddress, new Cookie("session", _authToken));
+
+                    string responseBody = await _client.GetStringAsync(_baseAddress);
+
+                    File.WriteAllText(pathToCache, responseBody);
+                    return ("Downloaded File to Cache");
+                }
+                catch (HttpRequestException e)
+                {
+                    return("\nException Caught!" + $"\nMessage :{e.Message} ");
+                }
+
             }
+            return "Cache already up to date!";
         }
 
        
